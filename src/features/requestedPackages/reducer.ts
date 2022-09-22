@@ -7,7 +7,8 @@ export enum ActionTypes {
   LOADING = "requestedPackages/loading",
   CLEARED = "requestedPackages/cleared",
   FETCH_MORE = "requestedPackages/fetch_more",
-  DATA_FIlTERED = "requestedPackages/data_filtered"
+  DATA_FIlTERED = "requestedPackages/data_filtered",
+  ITEMS_SIZE_CHANGED = "requestedPackages/items_size_changed"
 }
 
 interface IInitialState {
@@ -17,6 +18,7 @@ interface IInitialState {
   name: string;
   loading: boolean;
   results: string[];
+  itemsSize: 10;
 }
 
 type Action =
@@ -41,7 +43,8 @@ type Action =
   | {
       type: ActionTypes.FETCH_MORE;
       payload: { data: BuildPackage[]; page: number };
-    };
+    }
+  | { type: ActionTypes.ITEMS_SIZE_CHANGED; payload: { size: number } };
 
 export const initialState: IInitialState = {
   page: 1,
@@ -49,7 +52,8 @@ export const initialState: IInitialState = {
   count: 0,
   name: "",
   loading: false,
-  results: []
+  results: [],
+  itemsSize: 10
 };
 
 export const requestedPackagesReducer = (
@@ -64,7 +68,13 @@ export const requestedPackagesReducer = (
     }
 
     case ActionTypes.SEARCHED: {
-      return { ...state, ...action.payload, page: 1, results: [] };
+      return {
+        ...state,
+        ...action.payload,
+        page: 1,
+        results: [],
+        itemsSize: 10
+      };
     }
 
     case ActionTypes.NEXT_FETCHED: {
@@ -108,6 +118,13 @@ export const requestedPackagesReducer = (
         ...state,
         data: action.payload.data,
         page: action.payload.page
+      };
+    }
+
+    case ActionTypes.ITEMS_SIZE_CHANGED: {
+      return {
+        ...state,
+        itemsSize: action.payload.size
       };
     }
   }
